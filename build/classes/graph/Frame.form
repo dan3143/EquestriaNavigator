@@ -50,9 +50,9 @@
                   <Component id="btFloyd" max="32767" attributes="0"/>
                   <Component id="jToolBar2" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-              <Component id="lbMap" pref="594" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="lbMap" min="-2" pref="557" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -61,7 +61,7 @@
     <Component class="javax.swing.JLabel" name="lbMap">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/graph/map_of_equestria.png"/>
+          <Image iconType="3" name="/graph/files/map_of_equestria.png"/>
         </Property>
       </Properties>
       <Events>
@@ -78,8 +78,9 @@
         <Component class="javax.swing.JButton" name="btAddEdge">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/graph/route.png"/>
+              <Image iconType="3" name="/graph/files/route.png"/>
             </Property>
+            <Property name="mnemonic" type="int" value="114"/>
             <Property name="toolTipText" type="java.lang.String" value="Conectar dos ciudades"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -92,7 +93,7 @@
         <Component class="javax.swing.JButton" name="btEliminar">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/graph/delete.png"/>
+              <Image iconType="3" name="/graph/files/delete.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Eliminar ciudad"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -103,7 +104,7 @@
         <Component class="javax.swing.JButton" name="btCalculate">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/graph/calculate.png"/>
+              <Image iconType="3" name="/graph/files/calculate.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Calcular todos los caminos"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -140,7 +141,7 @@
         <Component class="javax.swing.JButton" name="btHelp">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/graph/help.png"/>
+              <Image iconType="3" name="/graph/files/help.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Ayuda"/>
           </Properties>
