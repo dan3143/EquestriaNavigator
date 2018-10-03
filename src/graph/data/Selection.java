@@ -1,7 +1,6 @@
 package graph.data;
 
 import graphlab.graphic.GraphicInfo;
-import java.awt.Color;
 
 /**
  *
@@ -18,7 +17,7 @@ public class Selection<T> {
 
         public void turnOff() {
             isSelected = false;
-            node.graphicInfo.color = GraphicInfo.white;
-            node.graphicInfo.text_color = GraphicInfo.black;
+            node.graphicInfo.color = GraphicInfo.WHITE;
+            node.graphicInfo.text_color = GraphicInfo.BLACK;
         }
     }

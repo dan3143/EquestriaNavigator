@@ -19,23 +19,32 @@ import static java.lang.Math.sqrt;
 import static graphlab.graphic.Circle.pow2;
 import graphlab.graphic.GraphicInfo;
 import java.awt.RenderingHints;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Stack;
 
 public class Frame extends javax.swing.JFrame {
 
     private final Graph<String> graph;
-    private final int node_radii = 30;
-    private Selection<String> selectedNode;
-    private Selection<String> secondaryNode;
-    private final Font font = new Font("Segoe UI", Font.PLAIN, 20);
+    private final int node_radii = 10;
+    private final Selection<String> selected;
+    private final Selection<String> secondary;
+    private final Selection<String> firstNode;
+    private final static int font_size = 20;
+    private final Font font = new Font("Segoe", Font.PLAIN, font_size);
 
     public Frame() {
         graph = new Graph();
-        selectedNode = new Selection();
-        secondaryNode = new Selection();
+        selected = new Selection();
+        secondary = new Selection();
+        firstNode = new Selection();
         initComponents();
-        this.setLocationRelativeTo(null);
-        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("files/icon.png")));
+        super.setLocationRelativeTo(null);
+        super.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("files/icon.png")));
     }
 
     public static void main(String args[]) {
@@ -54,102 +63,82 @@ public class Frame extends javax.swing.JFrame {
     private void initComponents() {
 
         lbMap = new javax.swing.JLabel();
-        btFloyd = new javax.swing.JToolBar();
-        btAddEdge = new javax.swing.JButton();
-        btEliminar = new javax.swing.JButton();
-        btCalculate = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jToolBar2 = new javax.swing.JToolBar();
-        btHelp = new javax.swing.JButton();
+        btCalcCamino = new javax.swing.JButton();
+        lbCosto = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Equestria Navigator");
         setResizable(false);
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         lbMap.setIcon(new javax.swing.ImageIcon(getClass().getResource("/graph/files/map_of_equestria.png"))); // NOI18N
         lbMap.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbMapMouseClicked(evt);
             }
-        });
-
-        btFloyd.setRollover(true);
-
-        btAddEdge.setIcon(new javax.swing.ImageIcon(getClass().getResource("/graph/files/route.png"))); // NOI18N
-        btAddEdge.setMnemonic('r');
-        btAddEdge.setToolTipText("Conectar dos ciudades");
-        btAddEdge.setFocusable(false);
-        btAddEdge.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btAddEdge.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btAddEdge.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btAddEdgeActionPerformed(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lbMapMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                lbMapMouseReleased(evt);
             }
         });
-        btFloyd.add(btAddEdge);
 
-        btEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/graph/files/delete.png"))); // NOI18N
-        btEliminar.setToolTipText("Eliminar ciudad");
-        btEliminar.setFocusable(false);
-        btEliminar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btEliminar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btFloyd.add(btEliminar);
-
-        btCalculate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/graph/files/calculate.png"))); // NOI18N
-        btCalculate.setToolTipText("Calcular todos los caminos");
-        btCalculate.setFocusable(false);
-        btCalculate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btCalculate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btCalculate.addActionListener(new java.awt.event.ActionListener() {
+        btCalcCamino.setText("Calcular camino");
+        btCalcCamino.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btCalculateActionPerformed(evt);
+                btCalcCaminoActionPerformed(evt);
             }
         });
-        btFloyd.add(btCalculate);
-
-        jButton1.setBackground(new java.awt.Color(204, 204, 255));
-        jButton1.setText("Ejecutar Floyd-Warshall");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+        btCalcCamino.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btCalcCaminoKeyPressed(evt);
             }
         });
-        btFloyd.add(jButton1);
 
-        jToolBar2.setRollover(true);
+        lbCosto.setText("Costo:");
 
-        btHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/graph/files/help.png"))); // NOI18N
-        btHelp.setText("Ayuda");
-        jToolBar2.add(btHelp);
+        jMenu1.setText("Grafo");
+
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem1.setText("Ejecutar Floyd-Warshall");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lbMap)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lbMap)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btFloyd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                .addComponent(btCalcCamino)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbCosto))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btFloyd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lbMap, javax.swing.GroupLayout.PREFERRED_SIZE, 557, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbMap, javax.swing.GroupLayout.PREFERRED_SIZE, 602, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btCalcCamino)
+                    .addComponent(lbCosto))
                 .addContainerGap())
         );
 
@@ -158,7 +147,7 @@ public class Frame extends javax.swing.JFrame {
 
     private void lbMapMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbMapMouseClicked
         if (!selectNode(evt.getX(), evt.getY(), evt.getButton())) {
-            if (!(selectedNode.isSelected || secondaryNode.isSelected)) {
+            if (!(selected.isSelected || secondary.isSelected)) {
                 Circle c = new Circle(evt.getX(), evt.getY(), node_radii);
                 if (graph.isOccupied(c)) {
                     JOptionPane.showMessageDialog(null, "El lugar está ocupado por otro nodo");
@@ -166,51 +155,91 @@ public class Frame extends javax.swing.JFrame {
                     String nombre = JOptionPane.showInputDialog(null, "Ingresa el nombre del lugar");
                     if (!(nombre == null || nombre.trim().isEmpty() || graph.contains(nombre))) {
                         Node node = new Node(nombre);
-                        node.setGraphicInfo(new GraphicInfo(c, GraphicInfo.white, GraphicInfo.black));
+                        node.setGraphicInfo(new GraphicInfo(c, GraphicInfo.WHITE, GraphicInfo.BLACK));
                         graph.addNode(node);
+                        graph.distances = null;
+                        graph.paths = null;
                     }
                 }
             }
             cleanSelection();
+            cleanEdges();
         }
         drawGraph();
     }//GEN-LAST:event_lbMapMouseClicked
 
-    private void btCalculateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalculateActionPerformed
-        if (selectedNode.isSelected && secondaryNode.isSelected && graph.distances != null) {
-            int costo = graph.distances[graph.nodeList.indexOf(selectedNode.node)][graph.nodeList.indexOf(secondaryNode.node)];
-            if (costo == Graph.INF) {
-                JOptionPane.showMessageDialog(null, "Parece que no puedes ir de " + selectedNode.node.info + " a " + secondaryNode.node.info);
-            } else {
-                JOptionPane.showMessageDialog(null, "Ir de " + selectedNode.node.info + " a " + secondaryNode.node.info + " cuesta " + costo);
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "Selecciona dos ciudades, y no olvides ejecutar el floyd-warshall");
+    private void lbMapMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbMapMousePressed
+        Node node = graph.getNodeAt(evt.getX(), evt.getY());
+        if (node != null) {
+            firstNode.isSelected = true;
+            firstNode.node = node;
         }
-    }//GEN-LAST:event_btCalculateActionPerformed
+    }//GEN-LAST:event_lbMapMousePressed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        graph.floydWarshall();
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void btAddEdgeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddEdgeActionPerformed
-        if (selectedNode.isSelected && secondaryNode.isSelected) {
-            int weight = getWeight();
-            if (weight == -1) {
+    private void lbMapMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbMapMouseReleased
+        if (firstNode.isSelected) {
+            Node node = graph.getNodeAt(evt.getX(), evt.getY());
+            if (node == firstNode.node || node == null) {
                 return;
             }
-            Edge edge = new Edge(selectedNode.node, secondaryNode.node, weight);
-            graph.edgeList.add(edge);
-            //drawEdge(edge);
-            drawGraph();
+            int weight = getWeight();
+            if (weight < Graph.INF) {
+                graph.edgeList.add(new Edge(firstNode.node, node, weight));
+                drawGraph();
+                firstNode.isSelected = false;
+            }
         }
-    }//GEN-LAST:event_btAddEdgeActionPerformed
+    }//GEN-LAST:event_lbMapMouseReleased
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_DELETE && selected.isSelected) {
+            graph.deleteNode(selected.node);
+            redrawGraph();
+        }
+    }//GEN-LAST:event_formKeyPressed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        graph.floydWarshall();
+        showMatrices();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void btCalcCaminoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalcCaminoActionPerformed
+        if (!selected.isSelected || !secondary.isSelected) {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar dos nodos");
+        } else if (graph.distances == null) {
+            JOptionPane.showMessageDialog(null, "Primero ejecuta el algorimo floyd-warshall");
+        } else if (selected.node == secondary.node) {
+            lbCosto.setText("Costo: gratis");
+        } else {
+            int i = graph.nodeList.indexOf(selected.node);
+            int j = graph.nodeList.indexOf(secondary.node);
+            int costo = graph.distances[i][j];
+            if (costo == Graph.INF) {
+                JOptionPane.showMessageDialog(null, "No hay camino entre estas dos ciudades");
+            } else {
+                lbCosto.setText("Costo: " + graph.distances[i][j] + " bits");
+                mostrarDistancia(selected.node, secondary.node);
+            }
+        }
+        drawGraph();
+    }//GEN-LAST:event_btCalcCaminoActionPerformed
+
+    private void btCalcCaminoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btCalcCaminoKeyPressed
+        formKeyPressed(evt);
+    }//GEN-LAST:event_btCalcCaminoKeyPressed
 
     private int getWeight() {
         try {
             return Integer.parseInt(JOptionPane.showInputDialog(null, "Ingresa el costo:"));
         } catch (Exception e) {
             return -1;
+        }
+    }
+
+    private void cleanEdges() {
+        for (Edge edge : graph.edgeList) {
+            edge.color = GraphicInfo.BLACK;
+            edge.stroke = 1;
         }
     }
 
@@ -221,20 +250,34 @@ public class Frame extends javax.swing.JFrame {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         Node n1 = edge.origin;
         Node n2 = edge.destiny;
-        g.setStroke(new BasicStroke(2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
         double x0 = n1.graphicInfo.circle.h;
         double y0 = n1.graphicInfo.circle.k;
         double x1 = n2.graphicInfo.circle.h;
         double y1 = n2.graphicInfo.circle.k;
-        g.setColor(Color.black);
-        g.draw(new Line2D.Double(x0, y0, x1, y1));
+        double[][] in = getIntersectionPoints(x0, y0, x1, y1, x1, y1, node_radii);
+        double x, y, x_text, y_text;
+        x_text = (x0 + x1) / 2;
+        y_text = (y0 + y1) / 2;
+        if (x0 > x1) {
+            y = in[0][1];
+            x = in[0][0];
+        } else {
+            y = in[1][1];
+            x = in[1][0];
+        }
+        drawArrow(x0, y0, x, y);
+        g.setColor(edge.color);
+        g.setStroke(new BasicStroke(edge.stroke));
+        g.draw(new Line2D.Double(x0, y0, x, y));
+        int size = 12;
+        g.setFont(new Font("Courier New", Font.BOLD, size));
+        int stringWidth = g.getFontMetrics().stringWidth(String.valueOf(edge.weight));
+        g.fill(new RoundRectangle2D.Double(x_text, y_text, stringWidth + 10, size + 5, 5, 5));
         g.setColor(Color.white);
-        g.setFont(font);
-        g.setColor(Color.white);
-        g.drawString(String.valueOf(edge.weight), (int) ((x0 + x1) / 2), (int) ((y1 + y0) / 2));
+        g.drawString(String.valueOf(edge.weight), (int) (x_text + stringWidth / 2), (int) (y_text + size / 2 + 5));
     }
 
-    private double[] getIntersectionPoints(double x0, double y0, double x1, double y1, double h, double k, double r) {
+    private double[][] getIntersectionPoints(double x0, double y0, double x1, double y1, double h, double k, double r) {
         double m = (y1 - y0) / (x1 - x0);
         double b = y0 - m * x0;
         double A = 1 + pow2(m);
@@ -244,25 +287,29 @@ public class Frame extends javax.swing.JFrame {
         double X2 = (-B - sqrt(pow2(B) - 4 * A * C)) / (2 * A);
         double Y1 = m * X1 + b;
         double Y2 = m * X2 + b;
-        double points[] = {X1, Y1};
+        double points[][] = {{X1, Y1}, {X2, Y2}};
         return points;
     }
 
     private void drawArrow(double h0, double k0, double h, double k) {
         double phi = Math.toRadians(40);
-        double punta = 20;
+        double tam_punta = 15;
         double delta_y = k - k0;
         double delta_x = h - h0;
         double theta = Math.atan2(delta_y, delta_x);
         double x, y, alpha = theta + phi;
         Graphics2D g = (Graphics2D) lbMap.getGraphics();
-        g.setStroke(new BasicStroke(3));
-        x = h - punta * Math.cos(alpha);
-        y = k - punta * Math.sin(alpha);
+        g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setStroke(new BasicStroke(2));
+        g.setColor(new Color(240, 93, 94));
+        x = h - tam_punta * Math.cos(alpha);
+        y = k - tam_punta * Math.sin(alpha);
         g.draw(new Line2D.Double(h, k, x, y));
         alpha = theta - phi;
-        x = h - punta * Math.cos(alpha);
-        y = k - punta * Math.sin(alpha);
+        x = h - tam_punta * Math.cos(alpha);
+        y = k - tam_punta * Math.sin(alpha);
         g.draw(new Line2D.Double(h, k, x, y));
     }
 
@@ -271,7 +318,6 @@ public class Frame extends javax.swing.JFrame {
         g.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setStroke(new BasicStroke(2));
         double x = node.graphicInfo.circle.h;
         double y = node.graphicInfo.circle.k;
         double radius = node.graphicInfo.circle.r;
@@ -279,9 +325,10 @@ public class Frame extends javax.swing.JFrame {
         int stringWidth = g.getFontMetrics().stringWidth(info);
         g.setColor(node.graphicInfo.color);
         g.fill(new Ellipse2D.Double(x - radius, y - radius, radius * 2, radius * 2));
+        g.fill(new Rectangle2D.Double(x - stringWidth / 2 - 10, y + node_radii + 10, stringWidth + 20, 15));
         g.setColor(node.graphicInfo.text_color);
         g.draw(new Ellipse2D.Double(x - radius, y - radius, radius * 2, radius * 2));
-        g.drawString(info, (int) (x - stringWidth / 2), (int) y);
+        g.drawString(info, (int) x - stringWidth / 2, (int) y + node_radii + 20);
     }
 
     private void drawGraph() {
@@ -293,66 +340,94 @@ public class Frame extends javax.swing.JFrame {
         }
     }
 
-    private void mostrarDistancia(Node n1, Node n2) {
-        if (n1 == n2) {
-            JOptionPane.showMessageDialog(null, "No tienes que pagar nada para ir de " + n1.info + " hasta " + n2.info);
-        } else {
-            int costo = graph.distances[graph.nodeList.indexOf(n1)][graph.nodeList.indexOf(n2)];
-            if (costo == Graph.INF) {
-                JOptionPane.showMessageDialog(null, "Al parecer no se puede ir desde " + n1.info + " hasta " + n2.info);
-            } else {
-                JOptionPane.showMessageDialog(null, "Te costaría " + costo + " bits ir de " + n1.info + " hasta " + n2.info);
+    private void redrawGraph() {
+        lbMap.paint(lbMap.getGraphics());
+        drawGraph();
+    }
+
+    private void mostrarDistancia(Node u, Node v) {
+        Stack<Node<String>> nodes = graph.getPath(u, v);
+        while(!nodes.isEmpty()){
+            Node n = nodes.pop();
+            if (nodes.isEmpty()) break;
+            paintEdge(nodes.peek(), n);
+        }
+    }
+
+    private void paintEdge(Node u, Node v) {
+        for (Edge edge : graph.edgeList) {
+            if (edge.origin == u && edge.destiny == v) {
+                edge.stroke = 2;
+                edge.color = GraphicInfo.BLUE;
+                break;
             }
         }
     }
 
     public boolean selectNode(int x, int y, int button) {
-        boolean nodeClicked = false;
-        for (Node node : graph.nodeList) {
-            if (node.contains(x, y)) {
-                nodeClicked = true;
-                if (button == MouseEvent.BUTTON1) {
-                    if (selectedNode.isSelected) {
-                        selectedNode.node.graphicInfo.color = GraphicInfo.white;
-                        selectedNode.node.graphicInfo.text_color = GraphicInfo.black;
-                    }
-                    selectedNode.isSelected = true;
-                    selectedNode.node = node;
-                    selectedNode.node.graphicInfo.color = GraphicInfo.black;
-                    selectedNode.node.graphicInfo.text_color = GraphicInfo.white;
-                } else {
-                    if (secondaryNode.isSelected) {
-                        secondaryNode.node.graphicInfo.color = GraphicInfo.white;
-                        secondaryNode.node.graphicInfo.text_color = GraphicInfo.black;
-                    }
-                    secondaryNode.isSelected = true;
-                    secondaryNode.node = node;
-                    secondaryNode.node.graphicInfo.color = GraphicInfo.yellow;
-                    secondaryNode.node.graphicInfo.text_color = GraphicInfo.black;
-                }
-                break;
-            }
+        Node node = graph.getNodeAt(x, y);
+        if (node == null) {
+            return false;
         }
-        return nodeClicked;
+        if (button == MouseEvent.BUTTON1) {
+            if (selected.isSelected) {
+                selected.node.graphicInfo.color = GraphicInfo.WHITE;
+                selected.node.graphicInfo.text_color = GraphicInfo.BLACK;
+            }
+            selected.isSelected = true;
+            selected.node = node;
+            selected.node.graphicInfo.color = GraphicInfo.BLACK;
+            selected.node.graphicInfo.text_color = GraphicInfo.WHITE;
+        } else {
+            if (secondary.isSelected) {
+                secondary.node.graphicInfo.color = GraphicInfo.WHITE;
+                secondary.node.graphicInfo.text_color = GraphicInfo.BLACK;
+            }
+            secondary.isSelected = true;
+            secondary.node = node;
+
+            secondary.node.graphicInfo.color = GraphicInfo.YELLOW;
+            secondary.node.graphicInfo.text_color = GraphicInfo.BLACK;
+        }
+        return true;
     }
 
     public void cleanSelection() {
-        if (selectedNode.isSelected) {
-            selectedNode.turnOff();
+        if (selected.isSelected) {
+            selected.turnOff();
         }
-        if (secondaryNode.isSelected) {
-            secondaryNode.turnOff();
+        if (secondary.isSelected) {
+            secondary.turnOff();
         }
     }
 
+    void showMatrices() {
+        int[][] distancia = graph.distances;
+        ArrayList<ArrayList<Node<String>>> caminos = graph.paths;
+        System.out.println("Caminos:");
+        System.out.println("\nDistancias:");
+        for (int i = 0; i < distancia.length; i++) {
+            System.out.println(Arrays.toString(distancia[i]));
+        }
+        if (graph.paths == null) {
+            return;
+        }
+        for (ArrayList<Node<String>> camino : caminos) {
+            for (Node<String> node : camino) {
+                if (node == null) break;
+                System.out.print(node.toString() + ", ");
+            }
+            System.out.println();
+        }
+        
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btAddEdge;
-    private javax.swing.JButton btCalculate;
-    private javax.swing.JButton btEliminar;
-    private javax.swing.JToolBar btFloyd;
-    private javax.swing.JButton btHelp;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JButton btCalcCamino;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JLabel lbCosto;
     private javax.swing.JLabel lbMap;
     // End of variables declaration//GEN-END:variables
 }

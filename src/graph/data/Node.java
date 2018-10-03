@@ -29,7 +29,7 @@ public class Node<T> {
         }
     }
     
-    public boolean contains(int x, int y){
+    public boolean contains(double x, double y){
         return graphicInfo.circle.contains(x, y);
     }
     
@@ -39,6 +39,7 @@ public class Node<T> {
     
     @Override
     public String toString(){
+        if (info == null) return null;
         return info.toString();
     }
 }

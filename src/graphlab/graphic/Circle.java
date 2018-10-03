@@ -15,7 +15,6 @@ public class Circle {
         this.r = r;
     }
     
-    
     public boolean contains(double x, double y){
         return pow2(x - h) + pow2(y - k) <= pow2(r);
     }
