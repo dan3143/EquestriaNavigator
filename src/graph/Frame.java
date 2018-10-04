@@ -304,6 +304,7 @@ public class Frame extends javax.swing.JFrame {
     }//GEN-LAST:event_equestriaMapMenuActionPerformed
 
     private void btCalcCaminoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalcCaminoActionPerformed
+        cleanEdges();
         if (!selected.isSelected || !secondary.isSelected) {
             JOptionPane.showMessageDialog(null, "Debe seleccionar dos nodos");
         } else if (graph.distances == null) {
@@ -316,12 +317,12 @@ public class Frame extends javax.swing.JFrame {
             int costo = graph.distances[i][j];
             if (costo == Graph.INF) {
                 JOptionPane.showMessageDialog(null, "No hay camino entre estas dos ciudades");
+                
             } else {
                 lbCosto.setText("Costo: " + graph.distances[i][j] + " bits");
                 mostrarDistancia(selected.node, secondary.node);
             }
         }
-        cleanEdges();
         drawGraph();
     }//GEN-LAST:event_btCalcCaminoActionPerformed
 
@@ -429,7 +430,7 @@ public class Frame extends javax.swing.JFrame {
     }
 
     private void drawGraph() {
-        System.out.println("Drawing...");
+       // lbMap.paint(lbMap.getGraphics());
         for (Edge edge : graph.edgeList) {
             drawEdge(edge);
         }
@@ -445,6 +446,7 @@ public class Frame extends javax.swing.JFrame {
 
     private void mostrarDistancia(Node u, Node v) {
         Stack<Node<String>> nodes = graph.getPath(u, v);
+        System.out.println(Arrays.toString(nodes.toArray()));
         while (!nodes.isEmpty()) {
             Node n = nodes.pop();
             if (nodes.isEmpty()) {

@@ -6,6 +6,7 @@
 package graph;
 
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.io.InputStream;
 import javax.swing.JFrame;
 
@@ -19,6 +20,7 @@ public class Ayuda extends javax.swing.JFrame {
     
     public Ayuda() {
         initComponents();
+        super.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("files/help.png")));
         super.setLocationRelativeTo(null);
         super.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         font = defaultFont();

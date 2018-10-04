@@ -56,6 +56,7 @@ public class Graph<T> {
         graph.edgeList.add(new Edge(smokey, pegasus, 20));
         graph.edgeList.add(new Edge(baltimare, manehattan, 10));
         graph.edgeList.add(new Edge(baltimare, dodge, 50));
+        graph.floydWarshall();
         return graph;
     }
     
