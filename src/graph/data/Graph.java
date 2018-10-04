@@ -2,21 +2,21 @@ package graph.data;
 
 import graph.graphic.Circle;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.Stack;
 
 public class Graph<T> {
 
-    public LinkedList<Node<T>> nodeList;
-    public LinkedList<Edge> edgeList;
+    public ArrayList<Node<T>> nodeList;
+    public ArrayList<Edge> edgeList;
     public int[][] distances;
     public static final int INF = 999999;
     public static final int RADII = 10;
     public ArrayList<ArrayList<Node<T>>> paths;
     
     public Graph() {
-        nodeList = new LinkedList();
-        edgeList = new LinkedList();
+        nodeList = new ArrayList();
+        edgeList = new ArrayList();
     }
     
     public static Graph MapOfEquestria(){
@@ -99,7 +99,7 @@ public class Graph<T> {
     
     public void deleteNode(Node node){
         nodeList.remove(node);
-        LinkedList<Edge> edges = new LinkedList<>();
+        ArrayList<Edge> edges = new ArrayList<>();
         for (Edge edge : edgeList) {
             if (edge.origin != node && edge.destiny != node){
                 edges.add(edge);
@@ -169,6 +169,27 @@ public class Graph<T> {
                 }
             }
         }
+        showMatrices();
+    }
+     void showMatrices() {
+        System.out.println("\nDistancias:");
+        for (int i = 0; i < distances.length; i++) {
+            System.out.println(Arrays.toString(distances[i]));
+        }
+        if (paths == null) {
+            return;
+        }
+        System.out.println("Caminos:");
+        for (ArrayList<Node<T>> camino : paths) {
+            for (Node<T> node : camino) {
+                if (node == null) {
+                    break;
+                }
+                System.out.print(node.toString() + ", ");
+            }
+            System.out.println();
+        }
+
     }
 
     public int nodeIndex(T info) {
@@ -189,17 +210,17 @@ public class Graph<T> {
     }
     
     public Stack<Node<T>> getPath(Node u, Node v){
-        int i;
         int j = nodeList.indexOf(v);
+        int i = nodeList.indexOf(u);
         Stack<Node<T>> path = new Stack();
-        Node aux = u;
-       // getPath();
-        while (aux != v){
+        path.add(v);
+        Node aux = paths.get(i).get(j);
+        while (aux != nodeList.get(j)){
             path.push(aux);
-            i = nodeList.indexOf(aux);
+            j = nodeList.indexOf(aux);
             aux = paths.get(i).get(j);
         }
-        path.push(v);
+        path.push(u);
         return path;
     }
 

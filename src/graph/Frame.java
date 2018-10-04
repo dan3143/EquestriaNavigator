@@ -22,9 +22,10 @@ import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 
 public class Frame extends javax.swing.JFrame {
 
@@ -210,7 +211,6 @@ public class Frame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void lbMapMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbMapMouseClicked
-
         if (!selectNode(evt.getX(), evt.getY(), evt.getButton())) {
             if (!(selected.isSelected || secondary.isSelected)) {
                 Circle c = new Circle(evt.getX(), evt.getY(), Graph.RADII);
@@ -257,7 +257,6 @@ public class Frame extends javax.swing.JFrame {
                 firstNode.isSelected = false;
                 if (auto) {
                     graph.floydWarshall();
-                    showMatrices();
                 }
             }
         }
@@ -286,7 +285,6 @@ public class Frame extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         graph.floydWarshall();
-        showMatrices();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void automaticWarshallActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_automaticWarshallActionPerformed
@@ -337,7 +335,7 @@ public class Frame extends javax.swing.JFrame {
     private void cleanEdges() {
         for (Edge edge : graph.edgeList) {
             edge.color = GraphicInfo.BLACK;
-            edge.stroke = 1;
+            //edge.stroke = 1;
         }
     }
 
@@ -446,13 +444,18 @@ public class Frame extends javax.swing.JFrame {
 
     private void mostrarDistancia(Node u, Node v) {
         Stack<Node<String>> nodes = graph.getPath(u, v);
+        Stack<Node<String>> ns = new Stack();
+        while(!nodes.isEmpty()){
+            ns.push(nodes.pop());
+        }
         System.out.println(Arrays.toString(nodes.toArray()));
-        while (!nodes.isEmpty()) {
-            Node n = nodes.pop();
-            if (nodes.isEmpty()) {
+        System.out.println(Arrays.toString(ns.toArray()));
+        while (!ns.isEmpty()) {
+            Node n = ns.pop();
+            if (ns.isEmpty()) {
                 break;
             }
-            paintEdge(nodes.peek(), n);
+            paintEdge(ns.peek(), n);
         }
     }
 
@@ -506,28 +509,7 @@ public class Frame extends javax.swing.JFrame {
         connectNodesMenu.setEnabled(false);
     }
 
-    void showMatrices() {
-        int[][] distancia = graph.distances;
-        ArrayList<ArrayList<Node<String>>> caminos = graph.paths;
-        System.out.println("Caminos:");
-        System.out.println("\nDistancias:");
-        for (int i = 0; i < distancia.length; i++) {
-            System.out.println(Arrays.toString(distancia[i]));
-        }
-        if (graph.paths == null) {
-            return;
-        }
-        for (ArrayList<Node<String>> camino : caminos) {
-            for (Node<String> node : camino) {
-                if (node == null) {
-                    break;
-                }
-                System.out.print(node.toString() + ", ");
-            }
-            System.out.println();
-        }
-
-    }
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem automaticWarshall;
