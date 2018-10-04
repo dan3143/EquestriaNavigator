@@ -224,10 +224,6 @@ public class Frame extends javax.swing.JFrame {
                         graph.addNode(node);
                         graph.distances = null;
                         graph.paths = null;
-                        if (auto){
-                            graph.floydWarshall();
-                            showMatrices();
-                        }
                     }
                 }
             }
@@ -259,6 +255,10 @@ public class Frame extends javax.swing.JFrame {
                 graph.edgeList.add(new Edge(firstNode.node, node, weight));
                 drawGraph();
                 firstNode.isSelected = false;
+                if (auto) {
+                    graph.floydWarshall();
+                    showMatrices();
+                }
             }
         }
     }//GEN-LAST:event_lbMapMouseReleased
