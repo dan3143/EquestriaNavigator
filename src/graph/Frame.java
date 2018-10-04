@@ -5,7 +5,7 @@ import graph.data.Node;
 import graph.data.Edge;
 import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
 import graph.data.Selection;
-import graphlab.graphic.Circle;
+import graph.graphic.Circle;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -16,10 +16,9 @@ import java.awt.geom.Line2D;
 import javax.swing.JOptionPane;
 import javax.swing.UnsupportedLookAndFeelException;
 import static java.lang.Math.sqrt;
-import static graphlab.graphic.Circle.pow2;
-import graphlab.graphic.GraphicInfo;
+import static graph.graphic.Circle.pow2;
+import graph.graphic.GraphicInfo;
 import java.awt.RenderingHints;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -29,16 +28,16 @@ import java.util.Stack;
 
 public class Frame extends javax.swing.JFrame {
 
-    private final Graph<String> graph;
-    private final int node_radii = 10;
+    private Graph<String> graph;
     private final Selection<String> selected;
     private final Selection<String> secondary;
     private final Selection<String> firstNode;
-    private final static int font_size = 20;
-    private final Font font = new Font("Segoe", Font.PLAIN, font_size);
+    private final static int FONT_SIZE = 20;
+    private final Font font = new Font("Segoe", Font.PLAIN, FONT_SIZE);
+    private boolean auto = true;
 
     public Frame() {
-        graph = new Graph();
+        graph = Graph.MapOfEquestria();
         selected = new Selection();
         secondary = new Selection();
         firstNode = new Selection();
@@ -57,26 +56,36 @@ public class Frame extends javax.swing.JFrame {
         //</editor-fold>
         Frame frame = new Frame();
         frame.setVisible(true);
+        java.awt.EventQueue.invokeLater(() -> {
+            frame.drawGraph();
+        });
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuItem1 = new javax.swing.JMenuItem();
         lbMap = new javax.swing.JLabel();
         btCalcCamino = new javax.swing.JButton();
         lbCosto = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
+        menu = new javax.swing.JMenu();
+        newGraphMenu = new javax.swing.JMenuItem();
+        equestriaMapMenu = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        deleteNodeMenu = new javax.swing.JMenuItem();
+        connectNodesMenu = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        automaticWarshall = new javax.swing.JCheckBoxMenuItem();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenuItem();
+
+        jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Equestria Navigator");
         setResizable(false);
-        addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                formKeyPressed(evt);
-            }
-        });
 
         lbMap.setIcon(new javax.swing.ImageIcon(getClass().getResource("/graph/files/map_of_equestria.png"))); // NOI18N
         lbMap.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -97,24 +106,79 @@ public class Frame extends javax.swing.JFrame {
                 btCalcCaminoActionPerformed(evt);
             }
         });
-        btCalcCamino.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                btCalcCaminoKeyPressed(evt);
-            }
-        });
 
         lbCosto.setText("Costo:");
 
-        jMenu1.setText("Grafo");
+        menu.setText("Grafo");
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem1.setText("Ejecutar Floyd-Warshall");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        newGraphMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        newGraphMenu.setText("Nuevo grafo");
+        newGraphMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                newGraphMenuActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        menu.add(newGraphMenu);
+
+        equestriaMapMenu.setText("Mapa de Equestria");
+        equestriaMapMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                equestriaMapMenuActionPerformed(evt);
+            }
+        });
+        menu.add(equestriaMapMenu);
+        menu.add(jSeparator2);
+
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem2.setText("Ejecutar Floyd-Warshall");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        menu.add(jMenuItem2);
+
+        deleteNodeMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
+        deleteNodeMenu.setText("Eliminar nodo seleccionado");
+        deleteNodeMenu.setEnabled(false);
+        deleteNodeMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteNodeMenuActionPerformed(evt);
+            }
+        });
+        menu.add(deleteNodeMenu);
+
+        connectNodesMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        connectNodesMenu.setText("Conectar nodos");
+        connectNodesMenu.setEnabled(false);
+        connectNodesMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectNodesMenuActionPerformed(evt);
+            }
+        });
+        menu.add(connectNodesMenu);
+        menu.add(jSeparator1);
+
+        automaticWarshall.setSelected(true);
+        automaticWarshall.setText("Ejecutar Floyd-Warshall al agregar nodos");
+        automaticWarshall.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                automaticWarshallActionPerformed(evt);
+            }
+        });
+        menu.add(automaticWarshall);
+
+        jMenuBar1.add(menu);
+
+        jMenu1.setText("Ayuda");
+
+        helpMenu.setText("Instrucciones");
+        helpMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpMenuActionPerformed(evt);
+            }
+        });
+        jMenu1.add(helpMenu);
 
         jMenuBar1.add(jMenu1);
 
@@ -134,8 +198,8 @@ public class Frame extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(lbMap, javax.swing.GroupLayout.PREFERRED_SIZE, 602, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addComponent(lbMap, javax.swing.GroupLayout.PREFERRED_SIZE, 624, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btCalcCamino)
                     .addComponent(lbCosto))
@@ -146,9 +210,10 @@ public class Frame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void lbMapMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbMapMouseClicked
+
         if (!selectNode(evt.getX(), evt.getY(), evt.getButton())) {
             if (!(selected.isSelected || secondary.isSelected)) {
-                Circle c = new Circle(evt.getX(), evt.getY(), node_radii);
+                Circle c = new Circle(evt.getX(), evt.getY(), Graph.RADII);
                 if (graph.isOccupied(c)) {
                     JOptionPane.showMessageDialog(null, "El lugar está ocupado por otro nodo");
                 } else {
@@ -159,11 +224,18 @@ public class Frame extends javax.swing.JFrame {
                         graph.addNode(node);
                         graph.distances = null;
                         graph.paths = null;
+                        if (auto){
+                            graph.floydWarshall();
+                            showMatrices();
+                        }
                     }
                 }
             }
             cleanSelection();
             cleanEdges();
+        }
+        if (selected.isSelected && secondary.isSelected) {
+            connectNodesMenu.setEnabled(true);
         }
         drawGraph();
     }//GEN-LAST:event_lbMapMouseClicked
@@ -191,17 +263,45 @@ public class Frame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_lbMapMouseReleased
 
-    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        if (evt.getKeyCode() == KeyEvent.VK_DELETE && selected.isSelected) {
+    private void deleteNodeMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteNodeMenuActionPerformed
+        if (selected.isSelected) {
             graph.deleteNode(selected.node);
             redrawGraph();
         }
-    }//GEN-LAST:event_formKeyPressed
+    }//GEN-LAST:event_deleteNodeMenuActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void connectNodesMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectNodesMenuActionPerformed
+        cleanSelection();
+        int w = getWeight();
+        if (w < Graph.INF) {
+            graph.edgeList.add(new Edge(selected.node, secondary.node, w));
+            drawGraph();
+        }
+        connectNodesMenu.setEnabled(false);
+    }//GEN-LAST:event_connectNodesMenuActionPerformed
+
+    private void helpMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuActionPerformed
+        new Ayuda().setVisible(true);
+    }//GEN-LAST:event_helpMenuActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         graph.floydWarshall();
         showMatrices();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void automaticWarshallActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_automaticWarshallActionPerformed
+        auto = automaticWarshall.isSelected();
+    }//GEN-LAST:event_automaticWarshallActionPerformed
+
+    private void newGraphMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGraphMenuActionPerformed
+        graph = new Graph();
+        redrawGraph();
+    }//GEN-LAST:event_newGraphMenuActionPerformed
+
+    private void equestriaMapMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_equestriaMapMenuActionPerformed
+        graph = Graph.MapOfEquestria();
+        redrawGraph();
+    }//GEN-LAST:event_equestriaMapMenuActionPerformed
 
     private void btCalcCaminoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalcCaminoActionPerformed
         if (!selected.isSelected || !secondary.isSelected) {
@@ -221,18 +321,15 @@ public class Frame extends javax.swing.JFrame {
                 mostrarDistancia(selected.node, secondary.node);
             }
         }
+        cleanEdges();
         drawGraph();
     }//GEN-LAST:event_btCalcCaminoActionPerformed
-
-    private void btCalcCaminoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btCalcCaminoKeyPressed
-        formKeyPressed(evt);
-    }//GEN-LAST:event_btCalcCaminoKeyPressed
 
     private int getWeight() {
         try {
             return Integer.parseInt(JOptionPane.showInputDialog(null, "Ingresa el costo:"));
         } catch (Exception e) {
-            return -1;
+            return Graph.INF;
         }
     }
 
@@ -254,7 +351,7 @@ public class Frame extends javax.swing.JFrame {
         double y0 = n1.graphicInfo.circle.k;
         double x1 = n2.graphicInfo.circle.h;
         double y1 = n2.graphicInfo.circle.k;
-        double[][] in = getIntersectionPoints(x0, y0, x1, y1, x1, y1, node_radii);
+        double[][] in = getIntersectionPoints(x0, y0, x1, y1, x1, y1, Graph.RADII);
         double x, y, x_text, y_text;
         x_text = (x0 + x1) / 2;
         y_text = (y0 + y1) / 2;
@@ -325,13 +422,14 @@ public class Frame extends javax.swing.JFrame {
         int stringWidth = g.getFontMetrics().stringWidth(info);
         g.setColor(node.graphicInfo.color);
         g.fill(new Ellipse2D.Double(x - radius, y - radius, radius * 2, radius * 2));
-        g.fill(new Rectangle2D.Double(x - stringWidth / 2 - 10, y + node_radii + 10, stringWidth + 20, 15));
+        g.fill(new Rectangle2D.Double(x - stringWidth / 2 - 10, y + Graph.RADII + 10, stringWidth + 20, 15));
         g.setColor(node.graphicInfo.text_color);
         g.draw(new Ellipse2D.Double(x - radius, y - radius, radius * 2, radius * 2));
-        g.drawString(info, (int) x - stringWidth / 2, (int) y + node_radii + 20);
+        g.drawString(info, (int) x - stringWidth / 2, (int) y + Graph.RADII + 20);
     }
 
     private void drawGraph() {
+        System.out.println("Drawing...");
         for (Edge edge : graph.edgeList) {
             drawEdge(edge);
         }
@@ -347,9 +445,11 @@ public class Frame extends javax.swing.JFrame {
 
     private void mostrarDistancia(Node u, Node v) {
         Stack<Node<String>> nodes = graph.getPath(u, v);
-        while(!nodes.isEmpty()){
+        while (!nodes.isEmpty()) {
             Node n = nodes.pop();
-            if (nodes.isEmpty()) break;
+            if (nodes.isEmpty()) {
+                break;
+            }
             paintEdge(nodes.peek(), n);
         }
     }
@@ -374,6 +474,7 @@ public class Frame extends javax.swing.JFrame {
                 selected.node.graphicInfo.color = GraphicInfo.WHITE;
                 selected.node.graphicInfo.text_color = GraphicInfo.BLACK;
             }
+            deleteNodeMenu.setEnabled(true);
             selected.isSelected = true;
             selected.node = node;
             selected.node.graphicInfo.color = GraphicInfo.BLACK;
@@ -395,10 +496,12 @@ public class Frame extends javax.swing.JFrame {
     public void cleanSelection() {
         if (selected.isSelected) {
             selected.turnOff();
+            deleteNodeMenu.setEnabled(false);
         }
         if (secondary.isSelected) {
             secondary.turnOff();
         }
+        connectNodesMenu.setEnabled(false);
     }
 
     void showMatrices() {
@@ -414,20 +517,32 @@ public class Frame extends javax.swing.JFrame {
         }
         for (ArrayList<Node<String>> camino : caminos) {
             for (Node<String> node : camino) {
-                if (node == null) break;
+                if (node == null) {
+                    break;
+                }
                 System.out.print(node.toString() + ", ");
             }
             System.out.println();
         }
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBoxMenuItem automaticWarshall;
     private javax.swing.JButton btCalcCamino;
+    private javax.swing.JMenuItem connectNodesMenu;
+    private javax.swing.JMenuItem deleteNodeMenu;
+    private javax.swing.JMenuItem equestriaMapMenu;
+    private javax.swing.JMenuItem helpMenu;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JLabel lbCosto;
     private javax.swing.JLabel lbMap;
+    private javax.swing.JMenu menu;
+    private javax.swing.JMenuItem newGraphMenu;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,6 +1,6 @@
 package graph.data;
 
-import graphlab.graphic.GraphicInfo;
+import graph.graphic.GraphicInfo;
 
 /**
  *

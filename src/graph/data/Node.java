@@ -1,7 +1,7 @@
 package graph.data;
 
-import graphlab.graphic.Circle;
-import graphlab.graphic.GraphicInfo;
+import graph.graphic.Circle;
+import graph.graphic.GraphicInfo;
 import java.awt.Color;
 
 /**
@@ -17,6 +17,11 @@ public class Node<T> {
     public Node(T info){
         this.info = info;
         graphicInfo = new GraphicInfo(new Circle(0,0,0), Color.white, Color.black);
+    }
+    
+    public Node(T info, double x, double y){
+        this.info = info;
+        graphicInfo = new GraphicInfo(new Circle(x, y, Graph.RADII), Color.white, Color.black);
     }
     
     public void setGraphicInfo(GraphicInfo graphicInfo){

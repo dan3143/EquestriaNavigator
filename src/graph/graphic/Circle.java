@@ -1,4 +1,4 @@
-package graphlab.graphic;
+package graph.graphic;
 
 /**
  *

@@ -1,6 +1,6 @@
 package graph.data;
 
-import graphlab.graphic.Circle;
+import graph.graphic.Circle;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -11,11 +11,52 @@ public class Graph<T> {
     public LinkedList<Edge> edgeList;
     public int[][] distances;
     public static final int INF = 999999;
+    public static final int RADII = 10;
     public ArrayList<ArrayList<Node<T>>> paths;
     
     public Graph() {
         nodeList = new LinkedList();
         edgeList = new LinkedList();
+    }
+    
+    public static Graph MapOfEquestria(){
+        Graph<String> graph = new Graph();
+        Node<String> canterlot = new Node("Canterlot", 624, 267);
+        Node<String> cloudsdale = new Node("Cloudsdale", 469, 166);
+        Node<String> ponyville = new Node("Ponyville", 551, 417);
+        Node<String> everfree = new Node("Everfree", 603, 469);
+        Node<String> neighagra = new Node("Neighagra Falls", 763, 169);
+        Node<String> baltimare = new Node("Baltimare", 1075, 343);
+        Node<String> dodge = new Node("Dodge City", 810, 564);
+        Node<String> pegasus = new Node("Los Pegasus", 158, 559);
+        Node<String> smokey = new Node("Smokey Mountains", 212, 275);
+        Node<String> manehattan = new Node("Manehattan", 1236, 231);
+
+        graph.nodeList.add(canterlot);
+        graph.nodeList.add(ponyville);
+        graph.nodeList.add(cloudsdale);
+        graph.nodeList.add(everfree);
+        graph.nodeList.add(neighagra);
+        graph.nodeList.add(baltimare);
+        graph.nodeList.add(dodge);
+        graph.nodeList.add(pegasus);
+        graph.nodeList.add(smokey);
+        graph.nodeList.add(manehattan);
+        
+        graph.edgeList.add(new Edge(canterlot, ponyville, 20));
+        graph.edgeList.add(new Edge(canterlot, neighagra, 10));
+        graph.edgeList.add(new Edge(canterlot, manehattan, 60));
+        graph.edgeList.add(new Edge(canterlot, cloudsdale, 20));
+        graph.edgeList.add(new Edge(canterlot, baltimare, 40));
+        graph.edgeList.add(new Edge(canterlot, smokey, 30));
+        graph.edgeList.add(new Edge(canterlot, pegasus, 60));
+        graph.edgeList.add(new Edge(ponyville, everfree, 10));
+        graph.edgeList.add(new Edge(ponyville, cloudsdale, 10));
+        graph.edgeList.add(new Edge(everfree, dodge, 20));
+        graph.edgeList.add(new Edge(smokey, pegasus, 20));
+        graph.edgeList.add(new Edge(baltimare, manehattan, 10));
+        graph.edgeList.add(new Edge(baltimare, dodge, 50));
+        return graph;
     }
     
     private ArrayList<ArrayList<Node<T>>> initializePaths(){
@@ -147,17 +188,15 @@ public class Graph<T> {
     }
     
     public Stack<Node<T>> getPath(Node u, Node v){
-        int i = nodeList.indexOf(u);
+        int i;
         int j = nodeList.indexOf(v);
         Stack<Node<T>> path = new Stack();
-        if (paths.get(i).get(j) == null) return path;
         Node aux = u;
        // getPath();
         while (aux != v){
             path.push(aux);
             i = nodeList.indexOf(aux);
             aux = paths.get(i).get(j);
-            
         }
         path.push(v);
         return path;
