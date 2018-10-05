@@ -18,14 +18,20 @@ import javax.swing.UnsupportedLookAndFeelException;
 import static java.lang.Math.sqrt;
 import static graph.graphic.Circle.pow2;
 import graph.graphic.GraphicInfo;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Stack;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 public class Frame extends javax.swing.JFrame {
 
@@ -33,6 +39,8 @@ public class Frame extends javax.swing.JFrame {
     private final Selection<String> selected;
     private final Selection<String> secondary;
     private final Selection<String> firstNode;
+    private Image graphImage;
+    private Image map = getBackImage();
     private final static int FONT_SIZE = 20;
     private final Font font = new Font("Segoe", Font.PLAIN, FONT_SIZE);
     private boolean auto = true;
@@ -45,6 +53,11 @@ public class Frame extends javax.swing.JFrame {
         initComponents();
         super.setLocationRelativeTo(null);
         super.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("files/icon.png")));
+    }
+    
+    @Override
+    public void update(Graphics g){
+        drawGraph();
     }
 
     public static void main(String args[]) {
@@ -60,6 +73,16 @@ public class Frame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             frame.drawGraph();
         });
+    }
+    
+    private Image getBackImage(){
+        try {
+            return ImageIO.read(new File(new File("").getAbsoluteFile() + "/src/graph/files/map_of_equestria.png"));
+        } catch (IOException ex) {
+            System.err.println("Error cargango imagen");
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -265,7 +288,8 @@ public class Frame extends javax.swing.JFrame {
     private void deleteNodeMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteNodeMenuActionPerformed
         if (selected.isSelected) {
             graph.deleteNode(selected.node);
-            redrawGraph();
+            graph.floydWarshall();
+            drawGraph();
         }
     }//GEN-LAST:event_deleteNodeMenuActionPerformed
 
@@ -293,12 +317,12 @@ public class Frame extends javax.swing.JFrame {
 
     private void newGraphMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGraphMenuActionPerformed
         graph = new Graph();
-        redrawGraph();
+        drawGraph();
     }//GEN-LAST:event_newGraphMenuActionPerformed
 
     private void equestriaMapMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_equestriaMapMenuActionPerformed
         graph = Graph.MapOfEquestria();
-        redrawGraph();
+        drawGraph();
     }//GEN-LAST:event_equestriaMapMenuActionPerformed
 
     private void btCalcCaminoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalcCaminoActionPerformed
@@ -340,7 +364,7 @@ public class Frame extends javax.swing.JFrame {
     }
 
     private void drawEdge(Edge edge) {
-        Graphics2D g = (Graphics2D) lbMap.getGraphics();
+        Graphics2D g = (Graphics2D) graphImage.getGraphics();
         g.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -394,7 +418,7 @@ public class Frame extends javax.swing.JFrame {
         double delta_x = h - h0;
         double theta = Math.atan2(delta_y, delta_x);
         double x, y, alpha = theta + phi;
-        Graphics2D g = (Graphics2D) lbMap.getGraphics();
+        Graphics2D g = (Graphics2D) graphImage.getGraphics();
         g.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -410,7 +434,7 @@ public class Frame extends javax.swing.JFrame {
     }
 
     private void drawNode(Node<String> node) {
-        Graphics2D g = (Graphics2D) lbMap.getGraphics();
+        Graphics2D g = (Graphics2D) graphImage.getGraphics();
         g.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -428,18 +452,20 @@ public class Frame extends javax.swing.JFrame {
     }
 
     private void drawGraph() {
-       // lbMap.paint(lbMap.getGraphics());
+        lbMap.paint(lbMap.getGraphics());
+        Dimension d = lbMap.getSize();
+        if (graphImage == null){
+            graphImage = createImage(d.width, d.height);
+        }
+        graphImage.getGraphics().drawImage(map, 0, 0, null);
         for (Edge edge : graph.edgeList) {
             drawEdge(edge);
         }
         for (Node<String> node : graph.nodeList) {
             drawNode(node);
         }
-    }
-
-    private void redrawGraph() {
-        lbMap.paint(lbMap.getGraphics());
-        drawGraph();
+        
+        lbMap.getGraphics().drawImage(graphImage, 0, 0, null);
     }
 
     private void mostrarDistancia(Node u, Node v) {

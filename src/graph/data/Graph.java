@@ -43,7 +43,7 @@ public class Graph<T> {
         graph.nodeList.add(smokey);
         graph.nodeList.add(manehattan);
         
-        graph.edgeList.add(new Edge(canterlot, ponyville, 20));
+        graph.edgeList.add(new Edge(canterlot, ponyville, 5));
         graph.edgeList.add(new Edge(canterlot, neighagra, 10));
         graph.edgeList.add(new Edge(canterlot, manehattan, 60));
         graph.edgeList.add(new Edge(canterlot, cloudsdale, 20));
