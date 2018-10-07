@@ -9,8 +9,8 @@ public class Graph<T> {
 
     public ArrayList<Node<T>> nodeList;
     public ArrayList<Edge> edgeList;
-    public int[][] distances;
-    public static final int INF = 999999;
+    public double[][] distances;
+    public static final double INF = 999999999;
     public static final int RADII = 10;
     public ArrayList<ArrayList<Node<T>>> paths;
     
@@ -58,18 +58,6 @@ public class Graph<T> {
         graph.edgeList.add(new Edge(baltimare, dodge, 50));
         graph.floydWarshall();
         return graph;
-    }
-    
-    private ArrayList<ArrayList<Node<T>>> initializePaths(){
-        ArrayList<ArrayList<Node<T>>> path = new ArrayList();
-        Node nullNode = new Node(null);
-        for (int i = 0; i < getOrder(); i++) {
-            path.add(new ArrayList());
-            for (int j = 0; j < getOrder(); j++) {
-                path.get(i).add(nullNode);
-            }
-        }
-        return path;
     }
 
     public boolean contains(T info) {
@@ -121,8 +109,8 @@ public class Graph<T> {
         edgeList.add(new Edge(node1, node2, weight));
     }
 
-    private int[][] generateDistanceMatrix() {
-        int matrix[][] = new int[nodeList.size()][nodeList.size()];
+    private double[][] generateDistanceMatrix() {
+        double matrix[][] = new double[nodeList.size()][nodeList.size()];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
                 if (i == j) {

@@ -21,7 +21,7 @@ public class Node<T> {
     
     public Node(T info, double x, double y){
         this.info = info;
-        graphicInfo = new GraphicInfo(new Circle(x, y, Graph.RADII), Color.white, Color.black);
+        graphicInfo = new GraphicInfo(new Circle(x, y, Graph.RADII), GraphicInfo.WHITE, GraphicInfo.BLACK);
     }
     
     public void setGraphicInfo(GraphicInfo graphicInfo){

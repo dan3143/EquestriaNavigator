@@ -11,11 +11,11 @@ public class Edge {
 
     public Node origin;
     public Node destiny;
-    public int weight;
+    public double weight;
     public Color color;
     public int stroke;
 
-    public Edge(Node origin, Node destiny, int weight) {
+    public Edge(Node origin, Node destiny, double weight) {
         this.origin = origin;
         this.destiny = destiny;
         this.weight = weight;

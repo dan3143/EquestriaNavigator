@@ -10,8 +10,7 @@ public class GraphicInfo {
     public static final Color WHITE = new Color(237, 237, 244);
     public static final Color BLACK = new Color(43, 45, 66);
     public static final Color YELLOW = new Color(244, 241, 187);
-    public static final Color BLUE = new Color(92, 128, 188);
-    
+    public static final Color RED = new Color(229, 89, 52);
     
     public GraphicInfo(Circle circle, Color color, Color text_color){
         this.circle = circle;
