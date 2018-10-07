@@ -57,7 +57,7 @@ public class Frame extends javax.swing.JFrame {
         secondary = new Selection();
         firstNode = new Selection();
         initComponents();
-//        paneMap.setDoubleBuffered(true);
+        paneMap.setDoubleBuffered(true);
         super.setLocationRelativeTo(null);
         super.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("files/icon.png")));
     }
@@ -398,26 +398,20 @@ public class Frame extends javax.swing.JFrame {
     }
 
     private void drawGraph() {
-        paneMap.paint(paneMap.getGraphics());
-        Dimension d = paneMap.getSize();
+        //paneMap.paint(paneMap.getGraphics());
         if (offScreenGraphImage == null) {
+            Dimension d = paneMap.getSize();
             this.offScreenGraphImage = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_RGB);
         }
         Graphics2D g = (Graphics2D) offScreenGraphImage.getGraphics();
         g.drawImage(MAP, 0, 0, null);
-        if (newEdge) {
-            for (Edge edge : graph.edgeList) {
-                drawEdge(edge);
-            }
-            newEdge = false;
+        for (Edge edge : graph.edgeList) {
+            drawEdge(edge);
         }
 
-        if (newNode) {
-            for (Node<String> node : graph.nodeList) {
-                drawNode(node);
-            }
+        for (Node<String> node : graph.nodeList) {
+            drawNode(node);
         }
-
         if (price != null) {
             int width = g.getFontMetrics().stringWidth(price);
             g.setColor(GraphicInfo.BLACK);
@@ -429,7 +423,6 @@ public class Frame extends javax.swing.JFrame {
             g.drawString(price, (width + 20) / 2 - width / 2 + 20, (FONT_SIZE * 2) / 2 + 20 + 5);
             price = null;
         }
-
         paneMap.getGraphics().drawImage(offScreenGraphImage, 0, 0, null);
     }
 
@@ -444,6 +437,7 @@ public class Frame extends javax.swing.JFrame {
     private void cleanEdges() {
         for (Edge edge : graph.edgeList) {
             edge.color = GraphicInfo.BLACK;
+            drawEdge(edge);
         }
     }
 
@@ -459,7 +453,6 @@ public class Frame extends javax.swing.JFrame {
         double x_text = (x0 + x1) / 2;
         double y_text = (y0 + y1) / 2;
         double x, y;
-        //int stringWidth = g.getFontMetrics().stringWidth(String.valueOf(edge.weight));
         int size = 12;
 
         if (x0 > x1) {
@@ -556,13 +549,14 @@ public class Frame extends javax.swing.JFrame {
             if (edge.origin == u && edge.destiny == v) {
                 edge.stroke = 2;
                 edge.color = GraphicInfo.RED;
+                drawEdge(edge);
                 break;
             }
         }
     }
 
-    public boolean selectNode(int x, int y, int button) {
-        Node node = graph.getNodeAt(x, y);
+   public boolean selectNode(int x, int y, int button) {
+            Node node = graph.getNodeAt(x, y);
         if (node == null) {
             return false;
         }
@@ -584,7 +578,7 @@ public class Frame extends javax.swing.JFrame {
             secondary.isSelected = true;
             secondary.node = node;
 
-            secondary.node.graphicInfo.color = GraphicInfo.YELLOW;
+            secondary.node.graphicInfo.color = GraphicInfo.PINK;
             secondary.node.graphicInfo.text_color = GraphicInfo.BLACK;
         }
         return true;
