@@ -437,6 +437,7 @@ public class Frame extends javax.swing.JFrame {
     private void cleanEdges() {
         for (Edge edge : graph.edgeList) {
             edge.color = GraphicInfo.BLACK;
+            edge.stroke = 1;
             drawEdge(edge);
         }
     }
@@ -547,7 +548,7 @@ public class Frame extends javax.swing.JFrame {
     private void paintEdge(Node u, Node v) {
         for (Edge edge : graph.edgeList) {
             if (edge.origin == u && edge.destiny == v) {
-                edge.stroke = 2;
+                edge.stroke = 3;
                 edge.color = GraphicInfo.RED;
                 drawEdge(edge);
                 break;
